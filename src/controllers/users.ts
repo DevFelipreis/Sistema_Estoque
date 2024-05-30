@@ -36,6 +36,32 @@ export const loginUser = async (req: Request, res: Response) => {
     }
 };
 
+
+export const getUser = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.body;
+
+        if (id) {
+            const oneUser = await knex<Usuario>("usuarios").where({ id }).first();
+            if (!oneUser) {
+                return res.status(404).json({ mensagem: "Usuário não encontrado" });
+            }
+            const { id: userId, nome: userNome, username: userUsername } = oneUser;
+            return res.status(200).json({ id: userId, nome: userNome, username: userUsername });
+        } else {
+            const allUsers = await knex<Usuario>("usuarios").select();
+            return res.status(200).json(allUsers.map(user => ({
+                id: user.id,
+                nome: user.nome,
+                username: user.username,
+            })));
+        }
+    } catch (error) {
+        console.error("Erro ao obter usuário(s):", error);
+        return res.status(500).json({ mensagem: "Erro inesperado" });
+    }
+};
+
 export const createUser = async (req: Request, res: Response) => {
     try {
         const { nome, username, senha } = req.body;
@@ -49,6 +75,39 @@ export const createUser = async (req: Request, res: Response) => {
 
         const { id, nome: userNome, username: userUsername } = newUser[0];
         res.status(201).json({ id, nome: userNome, username: userUsername });
+    } catch (error) {
+        console.error("Erro ao criar usuário:", error);
+        res.status(500).json({ mensagem: "Erro inesperado" });
+    }
+};
+
+export const updateUser = async (req: Request, res: Response) => {
+    try {
+        const { id, nome, username, senha } = req.body;
+
+        const pass = await bcrypt.hash(senha, 10);
+        const newUser = await knex<Usuario>("usuarios").where({ id }).update({
+            id: id.Usuario,
+            nome: nome.toLowerCase(),
+            username: username.toLowerCase().toString(),
+            senha: pass,
+        }).returning("*");
+
+        const { id: userId, nome: userNome, username: userUsername } = newUser[0];
+        res.status(201).json({ id: userId, nome: userNome, username: userUsername });
+    } catch (error) {
+        console.error("Erro ao criar usuário:", error);
+        res.status(500).json({ mensagem: "Erro inesperado" });
+    }
+};
+
+export const deleteUser = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.body;
+
+        const newUser = await knex<Usuario>("usuarios").where({ id }).delete();
+
+        res.status(201).json(`Usuário deletado com sucesso`);
     } catch (error) {
         console.error("Erro ao criar usuário:", error);
         res.status(500).json({ mensagem: "Erro inesperado" });
