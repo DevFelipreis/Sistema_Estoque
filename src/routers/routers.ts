@@ -14,7 +14,7 @@ router.post("/login", loginUser);
 router.put("/users", userValidation, updateUser)
 router.delete("/users", userValidation, deleteUser)
 
-router.use(loginValidation);
+//router.use(loginValidation);
 router.get("/products", getProduct);
 router.post("/products", productValidation, createProduct);
 router.put("/products", productValidationId, productValidation, updateProduct);

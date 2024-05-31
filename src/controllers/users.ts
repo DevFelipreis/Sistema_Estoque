@@ -9,7 +9,13 @@ dotenv.config();
 export const loginUser = async (req: Request, res: Response) => {
     try {
         const { username, senha } = req.body;
+
+        if (!username || !senha) {
+            return res.status(400).json({ mensagem: "Credenciais ausentes" });
+        }
+
         const user = await knex<Usuario>("usuarios").where({ username }).first();
+
         if (!user) {
             return res.status(401).json({ mensagem: "Credenciais inválidas" });
         }
