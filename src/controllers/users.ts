@@ -11,34 +11,33 @@ export const loginUser = async (req: Request, res: Response) => {
         const { username, senha } = req.body;
 
         if (!username || !senha) {
-            return res.status(400).json({ mensagem: "Credenciais ausentes" });
+            return res.status(400).json({ message: "Credenciais ausentes" });
         }
 
         const user = await knex<Usuario>("usuarios").where({ username }).first();
 
         if (!user) {
-            return res.status(401).json({ mensagem: "Credenciais inválidas" });
+            return res.status(401).json({ message: "Credenciais inválidas" });
         }
 
         const pass = await bcrypt.compare(senha, user.senha);
         if (!pass) {
-            return res.status(401).json({ mensagem: "Credenciais inválidas" });
+            return res.status(401).json({ message: "Credenciais inválidas" });
         }
 
-        const { id, nome: userNome, username: userEmail } = user;
+        const { id, nome: nome, username: apelido } = user;
         const token = jwt_user_token.sign({ id }, process.env.JWT_SECRET as string, { expiresIn: process.env.JWT_EXPIRES_IN });
 
         return res.status(200).json({
             usuario: {
                 id,
-                nome: userNome,
-                email: userEmail,
+                nome,
+                apelido
             },
             token,
         });
     } catch (error) {
-        console.error("Erro ao fazer login:", error);
-        return res.status(500).json({ mensagem: "Erro inesperado" });
+        return res.status(500).json({ message: "Erro inesperado" });
     }
 };
 
@@ -52,8 +51,8 @@ export const getUser = async (req: Request, res: Response) => {
             if (!oneUser) {
                 return res.status(404).json({ mensagem: "Usuário não encontrado" });
             }
-            const { id: userId, nome: userNome, username: userUsername } = oneUser;
-            return res.status(200).json({ id: userId, nome: userNome, username: userUsername });
+            const { id: userId, nome: nome, username: apelido } = oneUser;
+            return res.status(200).json({ id: userId, nome: nome, username: apelido });
         } else {
             const allUsers = await knex<Usuario>("usuarios").select();
             return res.status(200).json(allUsers.map(user => ({
@@ -63,8 +62,7 @@ export const getUser = async (req: Request, res: Response) => {
             })));
         }
     } catch (error) {
-        console.error("Erro ao obter usuário(s):", error);
-        return res.status(500).json({ mensagem: "Erro inesperado" });
+        return res.status(500).json({ message: "Erro inesperado" });
     }
 };
 
@@ -79,11 +77,10 @@ export const createUser = async (req: Request, res: Response) => {
             senha: pass,
         }).returning("*");
 
-        const { id, nome: userNome, username: userUsername } = newUser[0];
-        res.status(201).json({ id, nome: userNome, username: userUsername });
+        const { id, nome: nomeCompleto, username: apelido } = newUser[0];
+        res.status(201).json({ id, nome: nomeCompleto, username: apelido });
     } catch (error) {
-        console.error("Erro ao criar usuário:", error);
-        res.status(500).json({ mensagem: "Erro inesperado" });
+        res.status(500).json({ message: "Erro inesperado" });
     }
 };
 
@@ -102,8 +99,7 @@ export const updateUser = async (req: Request, res: Response) => {
         const { id: userId, nome: userNome, username: userUsername } = newUser[0];
         res.status(201).json({ id: userId, nome: userNome, username: userUsername });
     } catch (error) {
-        console.error("Erro ao criar usuário:", error);
-        res.status(500).json({ mensagem: "Erro inesperado" });
+        res.status(500).json({ message: "Erro inesperado" });
     }
 };
 
@@ -113,9 +109,8 @@ export const deleteUser = async (req: Request, res: Response) => {
 
         const newUser = await knex<Usuario>("usuarios").where({ id }).delete();
 
-        res.status(204).json({});
+        res.status(204).json();
     } catch (error) {
-        console.error("Erro ao criar usuário:", error);
-        res.status(500).json({ mensagem: "Erro inesperado" });
+        res.status(500).json({ message: "Erro inesperado" });
     }
 };

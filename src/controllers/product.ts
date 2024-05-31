@@ -21,7 +21,7 @@ export const getProduct = async (req: Request, res: Response) => {
                 .first();
 
             if (!oneProduct) {
-                return res.status(404).json({ mensagem: "Produto não encontrado" });
+                return res.status(404).json({ message: "Produto não encontrado" });
             }
 
             return res.status(200).json(oneProduct);
@@ -66,10 +66,11 @@ export const createProduct = async (req: Request, res: Response) => {
             descricao: productDescricao
         };
 
-        res.status(201).json(responseProduct);
+        const productCreated = JSON.stringify(responseProduct);
+
+        res.status(201).json({ message: `${productNome} criado com sucesso! ${productCreated}` });
     } catch (error) {
-        console.error("Erro ao criar produto:", error);
-        res.status(500).json({ mensagem: "Erro inesperado" });
+        res.status(500).json({ message: "Erro inesperado" });
     }
 };
 
@@ -96,10 +97,9 @@ export const updateProduct = async (req: Request, res: Response) => {
             descricao: productDescricao
         };
 
-        res.status(201).json(responseProduct);
+        res.status(201).json({ message: `${productNome} atualizado com sucesso! ${responseProduct}` });
     } catch (error) {
-        console.error("Erro ao criar produto:", error);
-        res.status(500).json({ mensagem: "Erro inesperado" });
+        res.status(500).json({ message: "Erro inesperado" });
     }
 };
 
@@ -110,6 +110,6 @@ export const deleteProduct = async (req: Request, res: Response) => {
         res.status(204).json();
     } catch (error) {
         console.error("Erro ao criar produto:", error);
-        res.status(500).json({ mensagem: "Erro inesperado" });
+        res.status(500).json({ message: "Erro inesperado" });
     }
 };

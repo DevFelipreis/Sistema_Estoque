@@ -9,15 +9,15 @@ export const userValidation = async (req: Request, res: Response, next: any) => 
         const { id, username, senha } = req.body;
         const user = await knex<Usuario>("usuarios").where({ id }).first();
         if (!id || !username || !senha) {
-            return res.status(401).json({ mensagem: "Preencha todos os campos" });
+            return res.status(401).json({ message: "Preencha todos os campos" });
         }
         if (!user) {
-            return res.status(401).json({ mensagem: "Usuário não encontrado" });
+            return res.status(401).json({ message: "Usuário não encontrado" });
         }
         next();
     }
     catch (error) {
         console.error("Erro ao fazer login:", error);
-        return res.status(500).json({ mensagem: "Erro inesperado" });
+        return res.status(500).json({ message: "Erro inesperado" });
     }
 }
