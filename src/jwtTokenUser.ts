@@ -1,16 +1,32 @@
-const jwt = require("jsonwebtoken");
-const jwt_password = require("./jwtHash");
+import { Request, Response, NextFunction } from "express";
+import jwt from 'jsonwebtoken';
+import dotenv from "dotenv";
+dotenv.config();
+const secret = process.env.JWT_SECRET as string;
 
-exports = {
-    sign(user) {
-        return jwt.sign(user, jwt_password.jwt.password, jwt_password.jwt.options);
-    },
+export const verify = (token: string, secret: string) => {
+    return jwt.verify(token, secret);
+};
 
-    verify(token) {
-        try {
-            return jwt.verify(token, jwt_password.jwt.password);
-        } catch (error) {
-            return;
+
+export const loginValidation = async (req: Request, res: Response, next: NextFunction) => {
+    const bearerToken = req.headers.authorization;
+
+    if (!bearerToken || !bearerToken.startsWith("Bearer ")) {
+        return res.status(400).json({ mensagem: "O token deve ser informado corretamente" });
+    }
+
+    const token = bearerToken.split(" ")[1];
+
+    try {
+        const user = verify(token, secret);
+        if (!user) {
+            return res.status(401).json({ mensagem: "Token inválido ou expirado" });
         }
-    },
+        req.userId = (user as any).id;
+        next();
+    } catch (error) {
+        console.error("Erro ao verificar o token:", error);
+        return res.status(401).json({ mensagem: "Token inválido ou expirado" });
+    }
 };

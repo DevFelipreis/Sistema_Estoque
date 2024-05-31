@@ -1,3 +1,13 @@
+import { Request } from "express";
+
+declare global {
+    namespace Express {
+        interface Request {
+            userId?: string;
+        }
+    }
+}
+
 export type Usuario = {
     id: number | string,
     nome: string,
