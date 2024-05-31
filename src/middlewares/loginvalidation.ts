@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { verify } from "../jwtTokenUser";
-import { secret } from "../jwtHash";
+import { verify } from "../jwt/jwtTokenUser";
+import { secret } from "../jwt/jwtHash";
 
 export const loginValidation = async (req: Request, res: Response, next: NextFunction) => {
     const bearerToken = req.headers.authorization;
