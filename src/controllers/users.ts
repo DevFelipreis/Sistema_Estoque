@@ -107,7 +107,7 @@ export const deleteUser = async (req: Request, res: Response) => {
 
         const newUser = await knex<Usuario>("usuarios").where({ id }).delete();
 
-        res.status(201).json(`Usuário deletado com sucesso`);
+        res.status(204).json({});
     } catch (error) {
         console.error("Erro ao criar usuário:", error);
         res.status(500).json({ mensagem: "Erro inesperado" });

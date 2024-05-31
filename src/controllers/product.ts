@@ -102,3 +102,14 @@ export const updateProduct = async (req: Request, res: Response) => {
         res.status(500).json({ mensagem: "Erro inesperado" });
     }
 };
+
+export const deleteProduct = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.body;
+        const newProduct = await knex<Produto>("produtos").where({ id }).delete()
+        res.status(204).json();
+    } catch (error) {
+        console.error("Erro ao criar produto:", error);
+        res.status(500).json({ mensagem: "Erro inesperado" });
+    }
+};
