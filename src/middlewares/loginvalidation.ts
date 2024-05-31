@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import jwt_user_token from "../jwtTokenUser";
-import jwt_password from "../jwtHash";
+//import jwt_user_token from "../jwtTokenUser";
+//import jwt_password from "../jwtHash";
 
 module.exports = async function (req: Request, res: Response, next: NextFunction) {
     const bearerToken = req.headers.authorization;

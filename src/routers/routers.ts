@@ -2,6 +2,8 @@ import { Router } from "express";
 
 import { createUser, deleteUser, getUser, loginUser, updateUser } from "../controllers/users";
 import { userValidation } from "../middlewares/user";
+import { createProduct, getProduct, updateProduct } from "../controllers/product";
+import { productValidation, productValidationId } from "../middlewares/product";
 
 const router = Router();
 
@@ -10,5 +12,9 @@ router.post("/users", createUser);
 router.post("/login", loginUser);
 router.put("/users", userValidation, updateUser)
 router.delete("/users", userValidation, deleteUser)
+
+router.get("/products", getProduct);
+router.post("/products", productValidation, createProduct);
+router.put("/products", productValidationId, productValidation, updateProduct);
 
 export default router;

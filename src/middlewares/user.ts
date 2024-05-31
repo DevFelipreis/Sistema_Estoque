@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
-import bcrypt from "bcrypt";
 import { knex } from "../database/conection";
 import { Usuario } from "../types";
-import jwt_user_token from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -10,6 +8,9 @@ export const userValidation = async (req: Request, res: Response, next: any) => 
     try {
         const { id, username, senha } = req.body;
         const user = await knex<Usuario>("usuarios").where({ id }).first();
+        if (!id || !username || !senha) {
+            return res.status(401).json({ mensagem: "Preencha todos os campos" });
+        }
         if (!user) {
             return res.status(401).json({ mensagem: "Usuário não encontrado" });
         }
