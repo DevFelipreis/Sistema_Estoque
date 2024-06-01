@@ -17,10 +17,23 @@
             <label for="preco">Preço:</label>
             <input type="number" id="preco" name="preco">
             <label for="categoria_id">Categoria:</label>
-            <input type="number" id="categoria_id" name="categoria_id">
+            <select id="categoria_id" name="categoria_id">
+                <option value="1">Computadores</option>
+                <option value="2">Laptops</option>
+                <option value="3">Monitores</option>
+                <option value="4">Teclados</option>
+                <option value="5">Mouses</option>
+                <option value="6">Impressoras</option>
+                <option value="7">Componentes de Hardware</option>
+                <option value="8">Acessórios</option>
+                <option value="9">Armazenamento</option>
+                <option value="10">Redes e Conectividade</option>
+            </select>
             <label for="descricao">Descrição:</label>
             <input type="text" id="descricao" name="descricao">
-            <input type="submit" value="Cadastrar">
+            <div class="button-cadastro">
+                <input type="submit" value="Cadastrar">
+            </div>
         </form>
         <div id="serverMessage"></div>
     </div>
