@@ -1,0 +1,37 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f1f1f1;
+}
+
+.rectangle {
+    width: 800px;
+    height: 350px;
+    background-color: #3498db;
+    border: 2px solid #2980b9;
+    border-radius: 10px;
+    margin: 5px;
+    padding: 5px;
+    color: white;
+    text-align: center;
+    font-size: 18px;
+    line-height: 100px;
+}
+
+#serverMessage {
+    margin-top: 0px;
+    padding: 0;
+    font-size: 18px;
+    color: #3498db;
+    font-weight: bold;
+}
+
+.button-cadastro {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
