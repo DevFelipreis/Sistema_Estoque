@@ -24,6 +24,7 @@ export type Produto = {
     id: number | string,
     nome: string,
     preco: number,
+    quantidade: number,
     categoria_id: number,
     descricao?: string
 };

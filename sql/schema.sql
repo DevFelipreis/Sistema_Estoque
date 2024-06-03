@@ -15,7 +15,8 @@ create table categorias(
 create table produtos(
     id serial primary key,
     nome varchar(255) not null ,
-    preco int not null,
+    preco int decimal(10,2) not null,
+    quantidade int not null,
     categoria_id int references categorias(id),
     descricao varchar(255)
 );

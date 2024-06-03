@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastrar Produto</title>
-    <link rel="stylesheet" type="text/css" href="./css/style.css">
+    <link rel="stylesheet" type="text/css" href="../css/style.css">
+
 </head>
 
 <body>
@@ -15,7 +16,9 @@
             <label for="nome">Nome:</label>
             <input type="text" id="nome" name="nome">
             <label for="preco">Preço:</label>
-            <input type="number" id="preco" name="preco">
+            <input type="number" id="preco" name="preco" step="0.01" min="0">
+            <label for="quantidade">Quantidade:</label>
+            <input type="number" id="quantidade" name="quantidade">
             <label for="categoria_id">Categoria:</label>
             <select id="categoria_id" name="categoria_id">
                 <option value="1">Computadores</option>
@@ -38,36 +41,8 @@
         <div id="serverMessage"></div>
     </div>
 
-    <script>
-        document.getElementById('cadastroForm').addEventListener('submit', async function (event) {
-            event.preventDefault();
+    <script src="./scripts/script-create-product.js"></script>
 
-            const formData = new FormData(this);
-
-            const requestOptions = {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(Object.fromEntries(formData))
-            };
-
-            try {
-                document.getElementById('serverMessage').innerText = '';
-                const response = await fetch('http://localhost:3000/products', requestOptions);
-                const data = await response.json();
-
-                if (response.ok) {
-                    alert('Produto cadastrado com sucesso!');
-                    document.getElementById('serverMessage').innerText = data.message;
-                } else {
-                    throw new Error(data.message || 'Erro ao cadastrar produto');
-                }
-            } catch (error) {
-                alert('Erro ao cadastrar produto: ' + error.message);
-            }
-        });
-    </script>
 </body>
 
 </html>

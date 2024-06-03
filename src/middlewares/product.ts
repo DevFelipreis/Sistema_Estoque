@@ -6,10 +6,10 @@ dotenv.config();
 
 export const productValidation = async (req: Request, res: Response, next: any) => {
     try {
-        const { nome, preco, categoria_id: id } = req.body;
+        const { nome, preco, quantidade, categoria_id: id } = req.body;
 
-        if (!id || !nome || !preco) {
-            return res.status(400).json({ message: "Nome, preço e ID da Categoria são obrigatórios" });
+        if (!id || !nome || !preco || !quantidade) {
+            return res.status(400).json({ message: "Nome, preço, quantidade e ID da Categoria são obrigatórios" });
         }
 
         const product = await knex<Categoria>("categorias").where({ id }).first();
@@ -31,6 +31,26 @@ export const productValidationId = async (req: Request, res: Response, next: any
         if (!product) {
             return res.status(404).json({ message: "Produto não encontrado" });
         }
+        next();
+    } catch (error) {
+        console.error("Erro ao validar produto:", error);
+        return res.status(500).json({ message: "Erro inesperado" });
+    }
+};
+
+export const productValidationEntry = async (req: Request, res: Response, next: any) => {
+    try {
+        const { id, quantidade } = req.body;
+
+        if (!id || !quantidade) {
+            return res.status(400).json({ message: "Id e quantidade são obrigatórios" });
+        }
+
+        const product = await knex<Categoria>("categorias").where({ id }).first();
+        if (!product) {
+            return res.status(404).json({ message: "Categoria do produto não encontrada" });
+        }
+
         next();
     } catch (error) {
         console.error("Erro ao validar produto:", error);

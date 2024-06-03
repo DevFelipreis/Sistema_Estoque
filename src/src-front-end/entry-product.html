@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrada de Produto</title>
+    <link rel="stylesheet" type="text/css" href="../css/style.css">
+
+</head>
+
+<body>
+    <div class="rectangle">
+        <h1>Entrada de Produto</h1>
+        <form id="entradaForm" action="/entrada-produto" method="patch">
+            <label for="id">Código do Produto:</label>
+            <input type="text" id="id" name="id">
+            <label for="quantidade">Quantidade:</label>
+            <input type="number" id="quantidade" name="quantidade">
+            <div class="button-entrada">
+                <input type="submit" value="Dar Entrada">
+            </div>
+        </form>
+        <div id="serverMessage"></div>
+    </div>
+
+    <script src="./scripts/script-entry-product.js"></script>
+
+</body>
+
+</html>

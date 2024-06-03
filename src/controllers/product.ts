@@ -15,6 +15,8 @@ export const getProduct = async (req: Request, res: Response) => {
                     "produtos.id",
                     "produtos.nome",
                     "produtos.preco",
+                    "produtos.quantidade",
+                    "produtos.descricao",
                     "categorias.nome as categoria_nome"
                 )
                 .where("produtos.id", id)
@@ -32,6 +34,8 @@ export const getProduct = async (req: Request, res: Response) => {
                     "produtos.id",
                     "produtos.nome",
                     "produtos.preco",
+                    "produtos.quantidade",
+                    "produtos.descricao",
                     "categorias.nome as categoria_nome"
                 );
 
@@ -45,16 +49,17 @@ export const getProduct = async (req: Request, res: Response) => {
 
 export const createProduct = async (req: Request, res: Response) => {
     try {
-        const { nome, preco, categoria_id, descricao } = req.body;
+        const { nome, preco, quantidade, categoria_id, descricao } = req.body;
 
         const newProduct = await knex<Produto>("produtos").insert({
             nome: nome.toLowerCase(),
             preco: preco,
+            quantidade: quantidade,
             categoria_id: categoria_id,
             descricao: descricao ? descricao.toLowerCase() : null,
         }).returning("*");
 
-        const { id, nome: productNome, preco: productPreco, categoria_id: productCategoriaId, descricao: productDescricao } = newProduct[0];
+        const { id, nome: productNome, preco: productPreco, quantidade: productQuantidade, categoria_id: productCategoriaId, descricao: productDescricao } = newProduct[0];
 
         const categoria = await knex<Categoria>("categorias").where({ id: productCategoriaId }).first();
 
@@ -62,6 +67,7 @@ export const createProduct = async (req: Request, res: Response) => {
             id,
             nome: productNome,
             preco: productPreco,
+            quantidade: productQuantidade,
             categoria_id: categoria?.id,
             descricao: productDescricao
         };
@@ -76,16 +82,17 @@ export const createProduct = async (req: Request, res: Response) => {
 
 export const updateProduct = async (req: Request, res: Response) => {
     try {
-        const { id, nome, preco, categoria_id, descricao } = req.body;
+        const { id, nome, preco, quantidade, categoria_id, descricao } = req.body;
 
         const newProduct = await knex<Produto>("produtos").where({ id }).update({
             nome: nome.toLowerCase(),
             preco: preco,
             categoria_id: categoria_id,
+            quantidade: quantidade,
             descricao: descricao ? descricao.toLowerCase() : null,
         }).returning("*");
 
-        const { id: productId, nome: productNome, preco: productPreco, categoria_id: productCategoriaId, descricao: productDescricao } = newProduct[0];
+        const { id: productId, nome: productNome, preco: productPreco, quantidade: productQuantidade, categoria_id: productCategoriaId, descricao: productDescricao } = newProduct[0];
 
         const categoria = await knex<Categoria>("categorias").where({ id: productCategoriaId }).first();
 
@@ -93,6 +100,7 @@ export const updateProduct = async (req: Request, res: Response) => {
             productId,
             nome: productNome,
             preco: productPreco,
+            quantidade: productQuantidade,
             categoria_id: categoria?.id,
             descricao: productDescricao
         };
@@ -102,6 +110,50 @@ export const updateProduct = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Erro inesperado" });
     }
 };
+
+export const entryProduct = async (req: Request, res: Response) => {
+    try {
+        const { id, quantidade } = req.body;
+
+        const getProduct: Produto | undefined = await knex<Produto>('produtos')
+            .where({ id })
+            .first();
+
+
+        if (!getProduct) {
+            return res.status(404).json({ message: 'Produto não encontrado.' });
+        }
+
+        const currentQuantity: number = Number(getProduct.quantidade);
+
+        const quantityToAdd: number = Number(quantidade);
+
+        const sum: number = currentQuantity + quantityToAdd;
+
+        const updatedProduct: Produto[] = await knex<Produto>('produtos')
+            .where({ id })
+            .update({
+                quantidade: sum
+            })
+            .returning('*');
+
+        const { categoria_id: productCategoriaId } = updatedProduct[0];
+        const categoria: Categoria | undefined = await knex<Categoria>('categorias')
+            .where({ id: productCategoriaId })
+            .first();
+
+        const responseProduct = {
+            ...updatedProduct[0],
+            categoria: categoria?.categoria
+        };
+
+        res.status(201).json({ message: `${responseProduct.nome} entrada no estoque com sucesso!`, product: responseProduct });
+    } catch (error) {
+        console.error('Erro inesperado:', error);
+        res.status(500).json({ message: "Erro inesperado." });
+    }
+};
+
 
 export const deleteProduct = async (req: Request, res: Response) => {
     try {
