@@ -147,7 +147,7 @@ export const entryProduct = async (req: Request, res: Response) => {
             categoria: categoria?.categoria
         };
 
-        res.status(201).json({ message: `${responseProduct.nome} entrada no estoque com sucesso!`, product: responseProduct });
+        res.status(204).json({ message: `${responseProduct.nome} entrada no estoque com sucesso!`, product: responseProduct });
     } catch (error) {
         console.error('Erro inesperado:', error);
         res.status(500).json({ message: "Erro inesperado." });
@@ -159,7 +159,7 @@ export const deleteProduct = async (req: Request, res: Response) => {
     try {
         const { id } = req.body;
         const newProduct = await knex<Produto>("produtos").where({ id }).delete()
-        res.status(204).json();
+        res.status(201).json({ message: "Produto excluído com sucesso!" });
     } catch (error) {
         console.error("Erro ao criar produto:", error);
         res.status(500).json({ message: "Erro inesperado" });

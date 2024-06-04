@@ -41,6 +41,41 @@ export const loginUser = async (req: Request, res: Response) => {
     }
 };
 
+export const loginAdmin = async (req: Request, res: Response) => {
+    try {
+        const { username, senha } = req.body;
+
+        if (!username || !senha) {
+            return res.status(400).json({ message: "Credenciais ausentes" });
+        }
+
+        const user = await knex<Usuario>("admin").where({ username }).first();
+
+        if (!user) {
+            return res.status(401).json({ message: "Credenciais inválidas" });
+        }
+
+        const pass = await bcrypt.compare(senha, user.senha);
+        if (!pass) {
+            return res.status(401).json({ message: "Credenciais inválidas" });
+        }
+
+        const { id, nome: nome, username: apelido } = user;
+        const token = jwt_user_token.sign({ id }, process.env.JWT_SECRET as string, { expiresIn: process.env.JWT_EXPIRES_IN });
+
+        return res.status(200).json({
+            usuario: {
+                id,
+                nome,
+                apelido
+            },
+            token,
+        });
+    } catch (error) {
+        return res.status(500).json({ message: "Erro inesperado" });
+    }
+};
+
 
 export const getUser = async (req: Request, res: Response) => {
     try {

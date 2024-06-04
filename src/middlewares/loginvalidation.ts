@@ -6,7 +6,7 @@ export const loginValidation = async (req: Request, res: Response, next: NextFun
     const bearerToken = req.headers.authorization;
 
     if (!bearerToken || !bearerToken.startsWith("Bearer ")) {
-        return res.status(400).json({ message: "O token deve ser informado corretamente" });
+        return res.status(400).json({ message: "Usuário não autorizado" });
     }
 
     const token = bearerToken.split(" ")[1];
