@@ -4,7 +4,9 @@
   "description": "Acesse o Figma do Projeto --> https://www.figma.com/design/zCEwYUzq4cWqdvF0nR202e/SISTEMA-DE-CADASTRO?m=dev&node-id=0-1&t=ncGY3XIGgYLMS3OE-1",
   "main": "main.ts",
   "scripts": {
-    "dev": "nodemon --exec ts-node ./src/main.ts"
+    "dev": "nodemon --exec ts-node ./src/main.ts",
+    "build": "rm -rf ./dist && tsc",
+    "start": "node ./dist/main.js"
   },
   "keywords": [],
   "author": "",
