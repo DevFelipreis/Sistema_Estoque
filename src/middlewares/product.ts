@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { knex } from "../database/conection";
 import { Categoria, Produto } from "../types";
 import dotenv from "dotenv";
 dotenv.config();
 
-export const productValidation = async (req: Request, res: Response, next: any) => {
+export const productValidation = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { nome, preco, quantidade, categoria_id: id } = req.body;
 
@@ -24,7 +24,7 @@ export const productValidation = async (req: Request, res: Response, next: any) 
     }
 };
 
-export const productValidationId = async (req: Request, res: Response, next: any) => {
+export const productValidationId = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.body;
         const product = await knex<Produto>("produtos").where({ id }).first();
@@ -38,17 +38,35 @@ export const productValidationId = async (req: Request, res: Response, next: any
     }
 };
 
-export const productValidationEntry = async (req: Request, res: Response, next: any) => {
+export const productValidationName = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { nome } = req.body;
+
+        const normalizedNome = nome.trim().toLowerCase();
+
+        const productName = await knex<Produto>("produtos").select().whereRaw('LOWER(nome) = ?', [normalizedNome]).first();
+
+
+        if (productName) {
+            console.log("Produto já cadastrado");
+            return res.status(409).json({ message: "Produto já cadastrado. Dê entrada de estoque ao invés de cadastrar" });
+        }
+
+        next();
+    } catch (error) {
+        console.error("Erro ao validar produto:", error);
+        return res.status(500).json({ message: "Erro inesperado ao validar o produto" });
+    }
+};
+
+
+
+export const productValidationEntry = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id, quantidade } = req.body;
 
         if (!id || !quantidade) {
             return res.status(400).json({ message: "Id e quantidade são obrigatórios" });
-        }
-
-        const product = await knex<Categoria>("categorias").where({ id }).first();
-        if (!product) {
-            return res.status(404).json({ message: "Categoria do produto não encontrada" });
         }
 
         next();
