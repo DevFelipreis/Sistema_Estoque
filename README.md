@@ -1,5 +1,6 @@
 # Sistema de Gerenciamento de Estoque #
 
+Acesse o projeto online: https://sistema-estoque-front-end.vercel.app/
 Acesse o Figma do Projeto --> https://www.figma.com/design/zCEwYUzq4cWqdvF0nR202e/SISTEMA-DE-CADASTRO?m=dev&node-id=0-1&t=ncGY3XIGgYLMS3OE-1
 
 ## Endpoints ##
