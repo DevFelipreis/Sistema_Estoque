@@ -51,8 +51,6 @@ export const getProduct = async (req: Request, res: Response) => {
     }
 };
 
-
-
 export const createProduct = async (req: Request, res: Response) => {
     try {
         const { nome, preco, quantidade, categoria_id, descricao } = req.body;
@@ -125,12 +123,7 @@ export const entryProduct = async (req: Request, res: Response) => {
             .where({ id })
             .first();
 
-
-        if (!getProduct) {
-            return res.status(404).json({ message: 'Produto não encontrado.' });
-        }
-
-        const currentQuantity: number = Number(getProduct.quantidade);
+        const currentQuantity: number = Number(getProduct?.quantidade);
 
         const quantityToAdd: number = Number(quantidade);
 
@@ -153,7 +146,7 @@ export const entryProduct = async (req: Request, res: Response) => {
             categoria: categoria?.categoria
         };
         const productEntry = JSON.stringify(responseProduct);
-        res.status(204).json({ message: `${responseProduct.nome} entrada no estoque com sucesso!`, productEntry });
+        res.status(201).json({ message: `${responseProduct.nome} entrada no estoque com sucesso!`, productEntry });
     } catch (error) {
         res.status(500).json({ message: "Erro inesperado." });
     }
