@@ -1,6 +1,7 @@
 # Sistema de Gerenciamento de Estoque #
 
 Acesse o projeto online: https://sistema-estoque-front-end.vercel.app/
+Inicie o servidor caso esteja pausado: https://api.render.com/deploy/srv-cpfp10dds78s739hbnl0?key=2HSWFj-pXTo
 
 Clique e inicie o servidor caso esteja pausado: https://api.render.com/deploy/srv-cpfp10dds78s739hbnl0?key=2HSWFj-pXTo
 

@@ -46,7 +46,6 @@ export const productValidationName = async (req: Request, res: Response, next: N
 
         const productName = await knex<Produto>("produtos").select().whereRaw('LOWER(nome) = ?', [normalizedNome]).first();
 
-
         if (productName) {
             console.log("Produto já cadastrado");
             return res.status(409).json({ message: "Produto já cadastrado. Dê entrada de estoque ao invés de cadastrar" });
