@@ -6,7 +6,7 @@ dotenv.config();
 
 export const getProduct = async (req: Request, res: Response) => {
     try {
-        const { id } = req.body;
+        const { id } = req.params;
 
         if (id) {
             const oneProduct = await knex<Produto>("produtos")
@@ -46,6 +46,8 @@ export const getProduct = async (req: Request, res: Response) => {
         return res.status(500).json({ mensagem: "Erro inesperado" });
     }
 };
+
+
 
 export const createProduct = async (req: Request, res: Response) => {
     try {

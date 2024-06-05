@@ -18,7 +18,8 @@ router.post("/users", createUser);
 router.put("/users", userValidation, updateUser)
 router.delete("/users", userValidation, deleteUser)
 
-router.get("/products", getProduct);
+router.get("/products", productValidationId, getProduct);
+router.get("/products/:id", productValidationId, getProduct);
 router.post("/products", productValidation, productValidationName, createProduct);
 router.put("/products", productValidationId, updateProduct);
 router.patch("/products", productValidationId, productValidationEntry, entryProduct);
