@@ -26,7 +26,9 @@ export const getProduct = async (req: Request, res: Response) => {
                 return res.status(404).json({ message: "Produto não encontrado" });
             }
 
-            return res.status(200).json(oneProduct);
+            const oneProductCaught = JSON.stringify(oneProduct);
+
+            return res.status(200).json(oneProductCaught);
         } else {
             const allProducts = await knex<Produto>("produtos")
                 .join<Categoria>("categorias", "produtos.categoria_id", "categorias.id")
@@ -39,7 +41,9 @@ export const getProduct = async (req: Request, res: Response) => {
                     "categorias.nome as categoria_nome"
                 );
 
-            return res.status(200).json(allProducts);
+            const allProductCaught = JSON.stringify(allProducts);
+
+            return res.status(200).json(allProductCaught);
         }
     } catch (error) {
         console.error("Erro ao obter produto(s):", error);
@@ -106,8 +110,8 @@ export const updateProduct = async (req: Request, res: Response) => {
             categoria_id: categoria?.id,
             descricao: productDescricao
         };
-
-        res.status(201).json({ message: `${productNome} atualizado com sucesso! ${responseProduct}` });
+        const productUpdated = JSON.stringify(responseProduct);
+        res.status(201).json({ message: `${productNome} atualizado com sucesso! ${productUpdated}` });
     } catch (error) {
         res.status(500).json({ message: "Erro inesperado" });
     }
@@ -148,10 +152,9 @@ export const entryProduct = async (req: Request, res: Response) => {
             ...updatedProduct[0],
             categoria: categoria?.categoria
         };
-
-        res.status(204).json({ message: `${responseProduct.nome} entrada no estoque com sucesso!`, product: responseProduct });
+        const productEntry = JSON.stringify(responseProduct);
+        res.status(204).json({ message: `${responseProduct.nome} entrada no estoque com sucesso!`, productEntry });
     } catch (error) {
-        console.error('Erro inesperado:', error);
         res.status(500).json({ message: "Erro inesperado." });
     }
 };
