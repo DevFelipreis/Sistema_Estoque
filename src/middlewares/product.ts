@@ -57,20 +57,3 @@ export const productValidationName = async (req: Request, res: Response, next: N
         return res.status(500).json({ message: "Erro inesperado ao validar o produto" });
     }
 };
-
-
-
-export const productValidationEntry = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { id, quantidade } = req.body;
-
-        if (!id || !quantidade) {
-            return res.status(400).json({ message: "Id e quantidade são obrigatórios" });
-        }
-
-        next();
-    } catch (error) {
-        console.error("Erro ao validar produto:", error);
-        return res.status(500).json({ message: "Erro inesperado" });
-    }
-};

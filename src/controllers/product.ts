@@ -6,50 +6,49 @@ dotenv.config();
 
 export const getProduct = async (req: Request, res: Response) => {
     try {
-        const { id } = req.params;
+        const { id, nome, categoria_id } = req.query;
+        console.log(id, nome, categoria_id)
+        let query = knex<Produto>("produtos")
+            .join<Categoria>("categorias", "produtos.categoria_id", "categorias.id")
+            .select(
+                "produtos.id",
+                "produtos.nome",
+                "produtos.preco",
+                "produtos.quantidade",
+                "produtos.descricao",
+                "categorias.nome as categoria_nome"
+            );
 
         if (id) {
-            const oneProduct = await knex<Produto>("produtos")
-                .join<Categoria>("categorias", "produtos.categoria_id", "categorias.id")
-                .select(
-                    "produtos.id",
-                    "produtos.nome",
-                    "produtos.preco",
-                    "produtos.quantidade",
-                    "produtos.descricao",
-                    "categorias.nome as categoria_nome"
-                )
-                .where("produtos.id", id)
-                .first();
+            query = query.where("produtos.id", id);
+            const products = await query;
 
-            if (!oneProduct) {
-                return res.status(404).json({ message: "Produto não encontrado" });
-            }
-
-            const oneProductCaught = JSON.stringify(oneProduct);
-
-            return res.status(200).json(oneProductCaught);
-        } else {
-            const allProducts = await knex<Produto>("produtos")
-                .join<Categoria>("categorias", "produtos.categoria_id", "categorias.id")
-                .select(
-                    "produtos.id",
-                    "produtos.nome",
-                    "produtos.preco",
-                    "produtos.quantidade",
-                    "produtos.descricao",
-                    "categorias.nome as categoria_nome"
-                );
-
-            const allProductCaught = JSON.stringify(allProducts);
-
-            return res.status(200).json(allProductCaught);
+            return res.status(200).json(products);
         }
+
+        if (nome) {
+            query = query.where("produtos.nome", "like", `%${nome}%`);
+            const products = await query;
+
+            return res.status(200).json(products);
+        }
+
+        if (categoria_id) {
+            query = query.where("produtos.categoria_id", categoria_id);
+            const products = await query;
+
+            return res.status(200).json(products);
+        }
+
+        const products = await query;
+        console.log(products)
+        return res.status(200).json(products);
     } catch (error) {
         console.error("Erro ao obter produto(s):", error);
         return res.status(500).json({ mensagem: "Erro inesperado" });
     }
 };
+
 
 export const createProduct = async (req: Request, res: Response) => {
     try {
@@ -84,17 +83,25 @@ export const createProduct = async (req: Request, res: Response) => {
     }
 };
 
+
 export const updateProduct = async (req: Request, res: Response) => {
     try {
         const { id, nome, preco, quantidade, categoria_id, descricao } = req.body;
 
-        const newProduct = await knex<Produto>("produtos").where({ id }).update({
-            nome: nome.toLowerCase(),
-            preco: preco,
-            categoria_id: categoria_id,
-            quantidade: quantidade,
-            descricao: descricao ? descricao.toLowerCase() : null,
-        }).returning("*");
+        const currentProduct = await knex<Produto>("produtos").where({ id }).first();
+
+        const updatedProductData = {
+            nome: nome ? nome.toLowerCase() : currentProduct?.nome,
+            preco: preco !== undefined ? preco : currentProduct?.preco,
+            quantidade: quantidade !== undefined ? quantidade : currentProduct?.quantidade,
+            categoria_id: categoria_id !== undefined ? categoria_id : currentProduct?.categoria_id,
+            descricao: descricao ? descricao.toLowerCase() : currentProduct?.descricao
+        };
+
+        const newProduct = await knex<Produto>("produtos")
+            .where({ id })
+            .update(updatedProductData)
+            .returning("*");
 
         const { id: productId, nome: productNome, preco: productPreco, quantidade: productQuantidade, categoria_id: productCategoriaId, descricao: productDescricao } = newProduct[0];
 
@@ -111,13 +118,19 @@ export const updateProduct = async (req: Request, res: Response) => {
         const productUpdated = JSON.stringify(responseProduct);
         res.status(201).json({ message: `${productNome} atualizado com sucesso! ${productUpdated}` });
     } catch (error) {
+        console.error('Unexpected error:', error);
         res.status(500).json({ message: "Erro inesperado" });
     }
 };
 
+
 export const entryProduct = async (req: Request, res: Response) => {
     try {
         const { id, quantidade } = req.body;
+        console.log(id, quantidade)
+        if (!id || !quantidade) {
+            return res.status(400).json({ message: "Id e quantidade são obrigatórios" });
+        }
 
         const getProduct: Produto | undefined = await knex<Produto>('produtos')
             .where({ id })
