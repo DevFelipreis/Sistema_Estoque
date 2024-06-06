@@ -77,7 +77,7 @@ export const createProduct = async (req: Request, res: Response) => {
 
         const productCreated = JSON.stringify(responseProduct);
 
-        res.status(201).json({ message: `${productNome} criado com sucesso! ${productCreated}` });
+        res.status(201).json(productCreated);
     } catch (error) {
         res.status(500).json({ message: "Erro inesperado" });
     }
