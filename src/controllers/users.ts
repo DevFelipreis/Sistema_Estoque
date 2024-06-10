@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { knex } from "../database/conection";
-import { Usuario } from "../types";
+import { Usuario, Profissoes } from "../types";
 import jwt_user_token from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
@@ -14,7 +14,20 @@ export const loginUser = async (req: Request, res: Response) => {
             return res.status(400).json({ message: "Credenciais ausentes" });
         }
 
-        const user = await knex<Usuario>("usuarios").where({ username }).first();
+        const user: Usuario | undefined = await knex<Usuario>("usuarios")
+            .join<Profissoes>("profissoes", "usuarios.profissao_id", "profissoes.id")
+            .select(
+                "usuarios.id",
+                "usuarios.nome",
+                "usuarios.username",
+                "usuarios.email",
+                "profissoes.nome as profissao_id",
+                "usuarios.ativo",
+                "usuarios.senha",
+                "usuarios.ultimo_login"
+            )
+            .where("usuarios.username", username)
+            .first();
 
         if (!user) {
             return res.status(401).json({ message: "Credenciais inválidas" });
@@ -25,7 +38,7 @@ export const loginUser = async (req: Request, res: Response) => {
             return res.status(401).json({ message: "Credenciais inválidas" });
         }
 
-        const { id, nome: nome, username: apelido, email, profissao, ativo } = user;
+        const { id, nome, username: apelido, email, profissao, ativo, ultimo_login } = user;
         const token = jwt_user_token.sign({ id }, process.env.JWT_SECRET as string, { expiresIn: process.env.JWT_EXPIRES_IN });
 
         return res.status(200).json({
@@ -34,9 +47,9 @@ export const loginUser = async (req: Request, res: Response) => {
                 nome,
                 apelido,
                 email,
-                profissao,
+                profissao_id: profissao,
                 ativo,
-                ultimo_login: new Date(),
+                ultimo_login,
             },
             token,
         });

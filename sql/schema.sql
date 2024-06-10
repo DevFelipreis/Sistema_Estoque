@@ -1,12 +1,17 @@
 create database sistema_gerenciamento_estoque;
 
+create table profissoes(
+    id serial primary key,
+    nome varchar(255) not null unique
+);
+
 create table usuarios(
     id serial primary key,
     username varchar(255) unique not null,
     nome varchar(255) not null ,
     senha varchar(255) not null,
     email varchar(255),
-    profissao varchar(255),
+    profissao_id int references profissoes(id),
     ultimo_login timestamp,
     ativo boolean    
 );
@@ -25,7 +30,7 @@ create table produtos(
     descricao varchar(255)
 );
 
-insert into categorias (nome) values
+insert into categorias (categoria) values
 ('Computadores'),
 ('Laptops'),
 ('Monitores'),
@@ -37,4 +42,10 @@ insert into categorias (nome) values
 ('Armazenamento'),
 ('Redes e Conectividade');
 
-
+insert into profissoes (profissao) values
+('administrador'),
+('encarregado'),
+('gerente'),
+('vendedor'),
+('estoquista'),
+('conferente'),

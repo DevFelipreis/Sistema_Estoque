@@ -7,7 +7,6 @@ dotenv.config();
 export const getProduct = async (req: Request, res: Response) => {
     try {
         const { id, nome, categoria_id } = req.query;
-        console.log(id, nome, categoria_id)
         let query = knex<Produto>("produtos")
             .join<Categoria>("categorias", "produtos.categoria_id", "categorias.id")
             .select(
