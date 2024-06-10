@@ -14,7 +14,7 @@ export type Usuario = {
     username: string,
     senha: string,
     email: string,
-    profissao_id: string,
+    profissao: string,
     ativo: boolean,
     ultimo_login: Date
 };
