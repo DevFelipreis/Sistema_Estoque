@@ -38,7 +38,7 @@ export const loginUser = async (req: Request, res: Response) => {
             return res.status(401).json({ message: "Credenciais inválidas" });
         }
 
-        const { id, nome, username: apelido, email, profissao_id, ativo, ultimo_login } = user;
+        const { id, nome, username: apelido, email, profissao, ativo, ultimo_login } = user;
         const token = jwt_user_token.sign({ id }, process.env.JWT_SECRET as string, { expiresIn: process.env.JWT_EXPIRES_IN });
 
         return res.status(200).json({
@@ -47,7 +47,7 @@ export const loginUser = async (req: Request, res: Response) => {
                 nome,
                 apelido,
                 email,
-                profissao_id,
+                profissao,
                 ativo,
                 ultimo_login,
             },
@@ -97,7 +97,7 @@ export const createUser = async (req: Request, res: Response) => {
             username: username.toLowerCase(),
             senha: pass,
             email: email.toLowerCase(),
-            profissao_id: profissao_id.toLowerCase(),
+            profissao: profissao_id.toLowerCase(),
             ativo,
             ultimo_login: new Date()
         }).returning("*");
