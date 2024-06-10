@@ -21,7 +21,7 @@ export const loginUser = async (req: Request, res: Response) => {
                 "usuarios.nome",
                 "usuarios.username",
                 "usuarios.email",
-                "profissoes.nome as profissao_id",
+                "profissoes.nome as profissao",
                 "usuarios.ativo",
                 "usuarios.senha",
                 "usuarios.ultimo_login"
@@ -47,7 +47,7 @@ export const loginUser = async (req: Request, res: Response) => {
                 nome,
                 apelido,
                 email,
-                profissao_id: profissao,
+                profissao,
                 ativo,
                 ultimo_login,
             },

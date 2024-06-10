@@ -24,13 +24,13 @@ create table categorias(
 create table produtos(
     id serial primary key,
     nome varchar(255) not null unique ,
-    preco int decimal(10,2) not null,
+     preco numeric(10,2) not null,
     quantidade int not null,
     categoria_id int references categorias(id),
     descricao varchar(255)
 );
 
-insert into categorias (categoria) values
+insert into categorias (nome) values
 ('Computadores'),
 ('Laptops'),
 ('Monitores'),
@@ -42,7 +42,7 @@ insert into categorias (categoria) values
 ('Armazenamento'),
 ('Redes e Conectividade');
 
-insert into profissoes (profissao) values
+insert into profissoes (nome) values
 ('administrador'),
 ('encarregado'),
 ('gerente'),
