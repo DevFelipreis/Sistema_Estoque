@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createUser, deleteUser, getUser, loginAdmin, loginUser, updateUser } from "../controllers/users";
+import { createUser, deleteUser, getUser, loginUser, updateUser } from "../controllers/users";
 import { userValidation } from "../middlewares/user";
 import { createProduct, deleteProduct, entryProduct, getProduct, updateProduct } from "../controllers/product";
 import { productValidation, productValidationId, productValidationName } from "../middlewares/product";
@@ -8,7 +8,6 @@ import { loginValidation } from "../middlewares/loginvalidation";
 const router = Router();
 
 router.post("/login", loginUser);
-router.post("/login/admin", loginAdmin);
 
 router.use(loginValidation);
 

@@ -13,6 +13,10 @@ export type Usuario = {
     nome: string,
     username: string,
     senha: string,
+    email: string,
+    profissao: string,
+    ativo: boolean,
+    ultimo_login: Date
 };
 
 export type Categoria = {
