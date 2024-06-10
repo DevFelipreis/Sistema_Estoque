@@ -38,7 +38,7 @@ export const loginUser = async (req: Request, res: Response) => {
             return res.status(401).json({ message: "Credenciais inválidas" });
         }
 
-        const { id, nome, username: apelido, email, profissao, ativo, ultimo_login } = user;
+        const { id, nome, username: apelido, email, profissao_id, ativo, ultimo_login } = user;
         const token = jwt_user_token.sign({ id }, process.env.JWT_SECRET as string, { expiresIn: process.env.JWT_EXPIRES_IN });
 
         return res.status(200).json({
@@ -47,7 +47,7 @@ export const loginUser = async (req: Request, res: Response) => {
                 nome,
                 apelido,
                 email,
-                profissao,
+                profissao_id,
                 ativo,
                 ultimo_login,
             },
@@ -84,21 +84,28 @@ export const getUser = async (req: Request, res: Response) => {
 
 export const createUser = async (req: Request, res: Response) => {
     try {
-        const { nome, username, senha, email, profissao, ativo } = req.body;
+        const { nome, username, senha, email, profissao_id, ativo } = req.body;
+
+        if (!nome || !username || !senha || !email || !profissao_id) {
+            return res.status(400).json({ message: "Todos os campos são obrigatórios." });
+        }
 
         const pass = await bcrypt.hash(senha, 10);
+
         const newUser = await knex<Usuario>("usuarios").insert({
             nome: nome.toLowerCase(),
-            username: username.toLowerCase().toString(),
+            username: username.toLowerCase(),
             senha: pass,
-            email: email.toLowerCase().toString(),
-            profissao: profissao.toLowerCase().toString(),
-            ativo
+            email: email.toLowerCase(),
+            profissao_id: profissao_id.toLowerCase(),
+            ativo,
+            ultimo_login: new Date()
         }).returning("*");
 
-        const { id, nome: nomeCompleto, username: apelido } = newUser[0];
-        res.status(201).json({ id, nome: nomeCompleto, username: apelido });
+        const { id, nome: nomeCompleto, username: apelido, ultimo_login } = newUser[0];
+        res.status(201).json({ id, nome: nomeCompleto, username: apelido, email, profissao_id, ativo, ultimo_login });
     } catch (error) {
+        console.log(error);
         res.status(500).json({ message: "Erro inesperado" });
     }
 };

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { createUser, deleteUser, getUser, loginUser, updateUser } from "../controllers/users";
-import { userValidation } from "../middlewares/user";
+import { userValidation, userValidationProfession } from "../middlewares/user";
 import { createProduct, deleteProduct, entryProduct, getProduct, updateProduct } from "../controllers/product";
 import { productValidation, productValidationId, productValidationName } from "../middlewares/product";
 import { loginValidation } from "../middlewares/loginvalidation";
@@ -12,7 +12,7 @@ router.post("/login", loginUser);
 router.use(loginValidation);
 
 router.get("/users", getUser);
-router.post("/users", createUser);
+router.post("/users", userValidationProfession, createUser);
 router.put("/users", userValidation, updateUser)
 router.delete("/users", userValidation, deleteUser)
 
