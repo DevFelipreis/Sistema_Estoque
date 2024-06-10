@@ -32,3 +32,8 @@ export type Produto = {
     categoria_id: number,
     descricao?: string
 };
+
+export type Profissoes = {
+    id: number | string,
+    profissao: string
+};
