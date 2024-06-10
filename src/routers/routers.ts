@@ -1,5 +1,4 @@
 import { Router } from "express";
-
 import { createUser, deleteUser, getUser, loginAdmin, loginUser, updateUser } from "../controllers/users";
 import { userValidation } from "../middlewares/user";
 import { createProduct, deleteProduct, entryProduct, getProduct, updateProduct } from "../controllers/product";
@@ -11,7 +10,7 @@ const router = Router();
 router.post("/login", loginUser);
 router.post("/login/admin", loginAdmin);
 
-//router.use(loginValidation);
+router.use(loginValidation);
 
 router.get("/users", getUser);
 router.post("/users", createUser);

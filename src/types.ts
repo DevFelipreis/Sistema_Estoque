@@ -6,7 +6,7 @@ declare global {
             userId?: string;
         }
     }
-}
+};
 
 export type Usuario = {
     id: number | string,

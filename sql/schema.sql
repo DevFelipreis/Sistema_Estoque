@@ -1,4 +1,4 @@
-create database sistema_gerenciamento_estoque
+create database sistema_gerenciamento_estoque;
 
 create table admin(
     id serial primary key,
@@ -27,8 +27,7 @@ create table produtos(
     descricao varchar(255)
 );
 
-
-INSERT INTO categorias (nome) VALUES
+insert into categorias (nome) values
 ('Computadores'),
 ('Laptops'),
 ('Monitores'),
