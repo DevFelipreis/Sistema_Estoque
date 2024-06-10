@@ -1,16 +1,14 @@
 create database sistema_gerenciamento_estoque;
 
-create table admin(
-    id serial primary key,
-    username varchar(255) unique not null,
-    nome varchar(255) not null ,
-    senha varchar(255) not null 
-);
 create table usuarios(
     id serial primary key,
     username varchar(255) unique not null,
     nome varchar(255) not null ,
-    senha varchar(255) not null 
+    senha varchar(255) not null,
+    email varchar(255),
+    profissao varchar(255),
+    ultimo_login timestamp,
+    ativo boolean    
 );
 
 create table categorias(
