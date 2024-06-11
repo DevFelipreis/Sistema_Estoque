@@ -14,7 +14,7 @@ export const loginUser = async (req: Request, res: Response) => {
             return res.status(400).json({ message: "Credenciais ausentes" });
         }
 
-        const user: Usuario | undefined = await knex<Usuario>("usuarios")
+        const user = await knex<Usuario>("usuarios")
             .join<Profissoes>("profissoes", "usuarios.profissao_id", "profissoes.id")
             .select(
                 "usuarios.id",
@@ -84,31 +84,68 @@ export const getUser = async (req: Request, res: Response) => {
 
 export const createUser = async (req: Request, res: Response) => {
     try {
-        const { nome, username, senha, email, profissao_id, ativo } = req.body;
+        const { nome, username, senha, email, profissao_id, ativo, ultimo_login } = req.body;
 
         if (!nome || !username || !senha || !email || !profissao_id) {
             return res.status(400).json({ message: "Todos os campos são obrigatórios." });
         }
 
-        const pass = await bcrypt.hash(senha, 10);
+        const existingUser = await knex<Usuario>("usuarios").where({ username }).first();
+        if (existingUser) {
+            return res.status(409).json({ message: "Username já existe." });
+        }
 
-        const newUser = await knex<Usuario>("usuarios").insert({
-            nome: nome.toLowerCase(),
-            username: username.toLowerCase(),
-            senha: pass,
-            email: email.toLowerCase(),
-            profissao: profissao_id.toLowerCase(),
+        const existingEmail = await knex<Usuario>("usuarios").where({ email }).first();
+        if (existingEmail) {
+            return res.status(409).json({ message: "Email já cadastrado." });
+        }
+
+        const hashedPassword = await bcrypt.hash(senha, 10);
+
+        const newUserId = await knex<Usuario>("usuarios").insert({
+            nome,
+            username,
+            senha: hashedPassword,
+            email,
+            profissao_id,
             ativo,
-            ultimo_login: new Date()
-        }).returning("*");
+            ultimo_login: new Date(),
+        }).returning("id");
 
-        const { id, nome: nomeCompleto, username: apelido, ultimo_login } = newUser[0];
-        res.status(201).json({ id, nome: nomeCompleto, username: apelido, email, profissao_id, ativo, ultimo_login });
+        const user = await knex<Usuario>("usuarios")
+            .join<Profissoes>("profissoes", "usuarios.profissao_id", "profissoes.id")
+            .select(
+                "usuarios.id",
+                "usuarios.nome",
+                "usuarios.username",
+                "usuarios.email",
+                "profissoes.nome as profissao",
+                "usuarios.ativo",
+                "usuarios.senha",
+                "usuarios.ultimo_login"
+            )
+            .where("usuarios.username", username)
+            .first();
+
+        const { id, profissao } = user;
+        return res.status(200).json({
+            usuario: {
+                id,
+                nome,
+                username,
+                email,
+                profissao,
+                ativo,
+                ultimo_login,
+            },
+        });
+
     } catch (error) {
-        console.log(error);
+        console.error("Erro ao criar usuário:", error);
         res.status(500).json({ message: "Erro inesperado" });
     }
 };
+
 
 export const updateUser = async (req: Request, res: Response) => {
     try {
