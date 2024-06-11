@@ -20,6 +20,21 @@ export const userValidationProfession = async (req: Request, res: Response, next
     }
 };
 
+export const userValidationId = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.body;
+        const user = await knex<Usuario>("usuarios").where({ id }).first();
+        if (!user) {
+            return res.status(401).json({ message: "Usuário não encontrado" });
+        };
+
+        next();
+
+    } catch (error) {
+        return res.status(500).json({ message: "Erro inesperado" });
+    };
+};
+
 
 
 
