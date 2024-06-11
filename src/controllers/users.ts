@@ -170,6 +170,10 @@ export const deleteUser = async (req: Request, res: Response) => {
     try {
         const { id } = req.body;
 
+        if (!id) {
+            return res.status(400).json({ message: "Todos os campos são obrigatórios." });
+        };
+
         const newUser = await knex<Usuario>("usuarios").where({ id }).delete();
 
         res.status(204).json();
