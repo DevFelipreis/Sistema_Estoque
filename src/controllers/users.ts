@@ -132,10 +132,10 @@ export const createUser = async (req: Request, res: Response) => {
         const hashedPassword = await bcrypt.hash(senha, 10);
 
         const newUserId = await knex<Usuario>("usuarios").insert({
-            nome,
-            username,
+            nome: nome.toLowerCase(),
+            username: username.toLowerCase(),
             senha: hashedPassword,
-            email,
+            email: email.toLowerCase(),
             profissao_id,
             ativo,
             ultimo_login: new Date(),
