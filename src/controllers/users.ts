@@ -60,22 +60,51 @@ export const loginUser = async (req: Request, res: Response) => {
 
 export const getUser = async (req: Request, res: Response) => {
     try {
-        const { id } = req.body;
+        const { id, nome, username, profissao_id } = req.query;
+        let query = knex<Usuario>("usuarios")
+            .join<Profissoes>("profissoes", "usuarios.profissao_id", "profissoes.id")
+            .select(
+                "usuarios.id",
+                "usuarios.nome",
+                "usuarios.username",
+                "usuarios.email",
+                "profissoes.nome as profissao",
+                "usuarios.ativo",
+                "usuarios.ultimo_login"
+            );
 
         if (id) {
-            const oneUser = await knex<Usuario>("usuarios").where({ id }).first();
-            if (!oneUser) {
-                return res.status(404).json({ mensagem: "Usuário não encontrado" });
-            }
-            const { id: userId, nome: nome, username: apelido } = oneUser;
-            return res.status(200).json({ id: userId, nome: nome, username: apelido });
+            query = query.where("usuarios.id", id);
+            const users = await query;
+            return res.status(200).json(
+                users
+            );
+        }
+        if (nome) {
+            query = query.where("usuarios.nome", nome);
+            const users = await query;
+            return res.status(200).json(
+                users
+            );
+        }
+        if (username) {
+            query = query.where("usuarios.username", username);
+            const users = await query;
+            return res.status(200).json(
+                users
+            );
+        }
+        if (profissao_id) {
+            query = query.where("usuarios.profissao_id", profissao_id);
+            const users = await query;
+            return res.status(200).json(
+                users
+            );
         } else {
-            const allUsers = await knex<Usuario>("usuarios").select();
-            return res.status(200).json(allUsers.map(user => ({
-                id: user.id,
-                nome: user.nome,
-                username: user.username,
-            })));
+            const users = await query;
+            return res.status(200).json(
+                users
+            );
         }
     } catch (error) {
         return res.status(500).json({ message: "Erro inesperado" });
