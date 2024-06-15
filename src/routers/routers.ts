@@ -12,6 +12,7 @@ router.post("/login", loginUser);
 router.use(loginValidation);
 
 router.get("/users", getUser);
+router.get("/users/:id", getUser);
 router.post("/users", userValidationProfession, createUser);
 router.put("/users", userValidationId, updateUser)
 router.delete("/users", userValidationId, deleteUser)
