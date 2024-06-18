@@ -35,6 +35,37 @@ export const userValidationId = async (req: Request, res: Response, next: NextFu
     };
 };
 
+export const updateAtivo = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const date = new Date();
+        const thirtyDaysInMilliseconds = 30 * 24 * 60 * 60 * 1000; // 30 dias em milissegundos
+        const usuarios = await knex<Usuario>("usuarios").select();
+
+        for (const usuario of usuarios) {
+            if (usuario.ultimo_login instanceof Date && (date.getTime() - usuario.ultimo_login.getTime()) > thirtyDaysInMilliseconds) {
+                await knex<Usuario>("usuarios")
+                    .where({ id: usuario.id })
+                    .update({ ativo: false });
+            }
+        }
+        next();
+    } catch (error) {
+        res.status(500).json({ message: "Erro inesperado" });
+    }
+}
+
+export const updateDateLogin = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { username } = req.body;
+        const updateUltimoLogin = await knex<Usuario>("usuarios")
+            .update({ ultimo_login: new Date() }).where({ username });
+        next();
+
+    } catch (error) {
+        res.status(500).json({ message: "Erro inesperado" });
+    }
+}
+
 
 
 

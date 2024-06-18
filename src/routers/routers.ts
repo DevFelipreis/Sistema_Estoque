@@ -1,11 +1,14 @@
 import { Router } from "express";
 import { createUser, deleteUser, getUser, loginUser, updateUser } from "../controllers/users";
-import { userValidationId, userValidationProfession } from "../middlewares/user";
+import { updateAtivo, updateDateLogin, userValidationId, userValidationProfession } from "../middlewares/user";
 import { createProduct, deleteProduct, entryProduct, getProduct, updateProduct } from "../controllers/product";
 import { productValidation, productValidationId } from "../middlewares/product";
 import { loginValidation } from "../middlewares/loginvalidation";
 
 const router = Router();
+
+router.use(updateAtivo);
+router.use(updateDateLogin);
 
 router.post("/login", loginUser);
 

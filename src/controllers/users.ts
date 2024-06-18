@@ -211,3 +211,6 @@ export const deleteUser = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Erro inesperado" });
     }
 };
+
+
+
