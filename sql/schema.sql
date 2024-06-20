@@ -12,7 +12,7 @@ create table usuarios(
     senha varchar(255) not null,
     email varchar(255),
     profissao_id int references profissoes(id),
-    ultimo_login timestamp,
+    ultimo_login timestamp not null,
     ativo boolean    
 );
 
@@ -24,10 +24,23 @@ create table categorias(
 create table produtos(
     id serial primary key,
     nome varchar(255) not null unique ,
-     preco numeric(10,2) not null,
+    preco numeric(10,2) not null,
     quantidade int not null,
     categoria_id int references categorias(id),
     descricao varchar(255)
+);
+
+create table vendas(
+    id serial primary key,
+    cliente varchar(255) not null,
+    cpf_cliente varchar(255),
+    vendedor_id int references usuarios(id),
+    produto_id int references produtos(id),
+    valor_produto numeric(10,2) not null,
+    quantidade int not null,
+    total numeric(10,2) not null,
+    data_compra timestamp not null,
+    ativo boolean
 );
 
 insert into categorias (nome) values

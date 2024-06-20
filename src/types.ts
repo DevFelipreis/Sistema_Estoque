@@ -37,3 +37,16 @@ export type Profissoes = {
     id: number | string,
     profissao: string
 };
+
+export type Vendas = {
+    id: number | string,
+    cliente: string,
+    cpf_cliente: string,
+    vendedor_id: number,
+    produto_id: number,
+    valor_produto: number,
+    quantidade: number,
+    total: number,
+    data_compra: Date,
+    ativo: boolean
+};

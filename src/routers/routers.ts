@@ -4,6 +4,7 @@ import { updateAtivo, updateDateLogin, userValidationId, userValidationProfessio
 import { createProduct, deleteProduct, entryProduct, getProduct, updateProduct } from "../controllers/product";
 import { productValidation, productValidationId } from "../middlewares/product";
 import { loginValidation } from "../middlewares/loginvalidation";
+import { createSell } from "../controllers/sell";
 
 const router = Router();
 
@@ -27,5 +28,7 @@ router.post("/products", productValidation, createProduct);
 router.put("/products", productValidationId, updateProduct);
 router.patch("/products", productValidationId, entryProduct);
 router.delete("/products", productValidationId, deleteProduct);
+
+router.post("sell", productValidation, createSell)
 
 export default router;
