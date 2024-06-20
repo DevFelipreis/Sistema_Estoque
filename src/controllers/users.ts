@@ -3,8 +3,13 @@ import bcrypt from "bcrypt";
 import { knex } from "../database/conection";
 import { Usuario, Profissoes } from "../types";
 import jwt_user_token from "jsonwebtoken";
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import dotenv from "dotenv";
 dotenv.config();
+
+interface CustomJwtPayload extends JwtPayload {
+    userId: string;
+}
 
 export const loginUser = async (req: Request, res: Response) => {
     try {
@@ -113,7 +118,7 @@ export const getUser = async (req: Request, res: Response) => {
 
 export const createUser = async (req: Request, res: Response) => {
     try {
-        const { nome, username, senha, email, profissao_id, ativo, ultimo_login } = req.body;
+        const { nome, username, senha, email, profissao_id, ativo } = req.body;
 
         if (!nome || !username || !senha || !email || !profissao_id) {
             return res.status(400).json({ message: "Todos os campos são obrigatórios." });
@@ -133,7 +138,7 @@ export const createUser = async (req: Request, res: Response) => {
 
         const newUserId = await knex<Usuario>("usuarios").insert({
             nome: nome.toLowerCase(),
-            username: username.toLowerCase(),
+            username: username.toString(),
             senha: hashedPassword,
             email: email.toLowerCase(),
             profissao_id,
@@ -156,7 +161,7 @@ export const createUser = async (req: Request, res: Response) => {
             .where("usuarios.username", username)
             .first();
 
-        const { id, profissao } = user;
+        const { id, profissao, ultimo_login } = user;
         return res.status(200).json({
             usuario: {
                 id,
@@ -170,30 +175,119 @@ export const createUser = async (req: Request, res: Response) => {
         });
 
     } catch (error) {
-        console.error("Erro ao criar usuário:", error);
         res.status(500).json({ message: "Erro inesperado" });
     }
 };
 
 
-export const updateUser = async (req: Request, res: Response) => {
+export const updateUserAll = async (req: Request, res: Response) => {
     try {
-        const { id, nome, username, senha } = req.body;
-
+        const { id, nome, username, senha, email, profissao_id, ativo } = req.body;
         const pass = await bcrypt.hash(senha, 10);
         const newUser = await knex<Usuario>("usuarios").where({ id }).update({
             id: id.Usuario,
             nome: nome.toLowerCase(),
-            username: username.toLowerCase().toString(),
+            username: username.toString(),
             senha: pass,
+            email: email.toLowerCase(),
+            profissao_id,
+            ativo,
+            ultimo_login: new Date(),
         }).returning("*");
 
-        const { id: userId, nome: userNome, username: userUsername } = newUser[0];
-        res.status(201).json({ id: userId, nome: userNome, username: userUsername });
+        const user = await knex<Usuario>("usuarios")
+            .join<Profissoes>("profissoes", "usuarios.profissao_id", "profissoes.id")
+            .select(
+                "usuarios.id",
+                "usuarios.nome",
+                "usuarios.username",
+                "usuarios.email",
+                "profissoes.nome as profissao",
+                "usuarios.ativo",
+                "usuarios.senha",
+                "usuarios.ultimo_login"
+            )
+            .where("usuarios.username", username)
+            .first();
+
+        const { profissao, ultimo_login } = user;
+        return res.status(200).json({
+            usuario: {
+                id,
+                nome,
+                username,
+                email,
+                profissao,
+                ativo,
+                ultimo_login,
+            },
+        });
+
+
     } catch (error) {
         res.status(500).json({ message: "Erro inesperado" });
     }
 };
+
+export const updateUser = async (req: Request, res: Response) => {
+    try {
+        const authHeader = req.headers.authorization;
+
+        if (!authHeader) {
+            return res.status(401).json({ message: "Token não fornecido" });
+        }
+
+        const token = authHeader.split(' ')[1];
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as CustomJwtPayload;
+
+        const userId = decoded!.id;
+
+        const { nome, username, senha, email } = req.body;
+        const pass = await bcrypt.hash(senha, 10);
+
+        const newUser = await knex<Usuario>("usuarios").where({ id: userId }).update({
+            nome: nome.toLowerCase(),
+            username: username.toString(),
+            senha: pass,
+            email: email.toLowerCase(),
+        }).returning("*");
+
+        const user = await knex<Usuario>("usuarios")
+            .join<Profissoes>("profissoes", "usuarios.profissao_id", "profissoes.id")
+            .select(
+                "usuarios.id",
+                "usuarios.nome",
+                "usuarios.username",
+                "usuarios.email",
+                "profissoes.nome as profissao",
+                "usuarios.ativo",
+                "usuarios.senha",
+                "usuarios.ultimo_login"
+            )
+            .where("usuarios.username", username)
+            .first();
+
+        const { id, profissao, ativo, ultimo_login } = user;
+        return res.status(200).json({
+            usuario: {
+                id,
+                nome,
+                username,
+                email,
+                profissao,
+                ativo,
+                ultimo_login,
+            },
+        });
+    } catch (error) {
+        if (error instanceof jwt.JsonWebTokenError) {
+            return res.status(401).json({ message: "Token inválido" });
+        }
+        console.error(error);
+        res.status(500).json({ message: "Erro inesperado" });
+    }
+}
 
 export const deleteUser = async (req: Request, res: Response) => {
     try {

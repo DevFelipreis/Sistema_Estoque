@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createUser, deleteUser, getUser, loginUser, updateUser } from "../controllers/users";
+import { createUser, deleteUser, getUser, loginUser, updateUser, updateUserAll } from "../controllers/users";
 import { updateAtivo, updateDateLogin, userValidationId, userValidationProfession } from "../middlewares/user";
 import { createProduct, deleteProduct, entryProduct, getProduct, updateProduct } from "../controllers/product";
 import { productValidation, productValidationId } from "../middlewares/product";
@@ -17,7 +17,8 @@ router.use(loginValidation);
 router.get("/users", getUser);
 router.get("/users/:id", getUser);
 router.post("/users", userValidationProfession, createUser);
-router.put("/users", userValidationId, updateUser)
+router.put("/users", userValidationId, updateUserAll)
+router.patch("/users", updateUser)
 router.delete("/users", userValidationId, deleteUser)
 
 router.get("/products", getProduct);
