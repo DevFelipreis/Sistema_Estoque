@@ -29,6 +29,6 @@ router.put("/products", productValidationId, updateProduct);
 router.patch("/products", productValidationId, entryProduct);
 router.delete("/products", productValidationId, deleteProduct);
 
-router.post("sell", productValidation, createSell)
+router.post("sell", productValidation, createSell);
 
 export default router;
